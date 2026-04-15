@@ -154,7 +154,7 @@ To visualize the overlay before computing metrics:
 </p>
 
 <p align="center">
-  <img src="Screenshot from 2026-04015 11-28-08.png" width="1000" style="object-fit:fill;">
+  <img src="compute_metrics_new.png" width="1000" style="object-fit:fill;">
 </p>
 
 ## Dataset
