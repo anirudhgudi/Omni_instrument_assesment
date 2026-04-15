@@ -153,6 +153,10 @@ To visualize the overlay before computing metrics:
   $$\color{red}Red$$ = Ground truth mesh | $$\color{lightgreen}Green$$ = Generated mesh
 </p>
 
+<p align="center">
+  <img src="Screenshot from 2026-04015 11-28-08.png" width="1000" style="object-fit:fill;">
+</p>
+
 ## Dataset
 The [ROS 2 bag file](https://huggingface.co/datasets/OmniInstrument/CV_project/tree/main/VIO_stripped) has the following topics, you can use these to generate a metric depth map.
 ### ROS 2 Bag Topics
