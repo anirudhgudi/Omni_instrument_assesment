@@ -29,7 +29,7 @@ This assignment assesses your understanding of geometric vision and metric depth
 
 ## Assessment Version
 
-This version keeps the original reconstruction stack and adds a custom depth-estimation path for the assessment. The default launch path uses a `neural_depth` ROS 2 package with a HITNet ONNX stereo model to estimate metric depth from the rectified ZED stereo color images.
+This version keeps the original reconstruction stack and adds a custom depth-estimation path for the assessment. The default launch path uses a `neural_depth` ROS 2 package with a HITNet ((https://arxiv.org/abs/2007.12140) ONNX stereo model to estimate metric depth from the rectified ZED stereo color images.
 
 Pipeline summary:
 - Subscribes to `/zed/zedxm/left/color/rect/image`, `/zed/zedxm/right/color/rect/image`, and left camera info from the provided ROS 2 bag.
