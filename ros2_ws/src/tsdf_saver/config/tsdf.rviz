@@ -1,0 +1,128 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+    SplitFraction: 0.5
+    TreeHeight: 600
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    SplitFraction: 0.5
+Visualization Manager:
+  Class: ""
+  Displays:
+    # ── Floor grid ────────────────────────────────────────────────────
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Value: true
+      Color: 160; 160; 164
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+
+    # ── TF frames (to debug frame names) ─────────────────────────────
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Value: false
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Frame Timeout: 15
+      Marker Scale: 0.3
+
+    # ── Left camera feed (comes directly from the bag) ────────────────
+    - Class: rviz_default_plugins/Image
+      Name: Left Camera (Raw)
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /zed/zedxm/left/color/rect/image
+      Value: true
+
+    # ── Colorised depth (published by stereo_depth_node) ─────────────
+    - Class: rviz_default_plugins/Image
+      Name: Depth Image (Colorized)
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /omni_depth/depth_colorized
+      Value: true
+
+    # ── 3-D point cloud ───────────────────────────────────────────────
+    - Class: rviz_default_plugins/PointCloud2
+      Alpha: 1.0
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10.0
+        Min Value: 0.0
+        Value: true
+      Color: 255; 255; 255
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 2
+      Size (m): 0.01
+      Style: Points
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /stereo/points
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+
+  Enabled: true
+  Global Options:
+    Background Color: 30; 30; 30
+    # Use zed_left_camera_frame_optical — the actual TF frame from the bag.
+    # If the point cloud still shows "no transform", switch this to "map"
+    # or whichever root frame the bag TF tree broadcasts.
+    Fixed Frame: zed_left_camera_frame_optical
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 4.0
+      Enable Suspend: false
+      Focal Point:
+        X: 0.5
+        Y: 0.0
+        Z: 0.5
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.01
+      Pitch: 0.45
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 5.6
+    Saved: ~

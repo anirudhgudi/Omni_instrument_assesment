@@ -17,7 +17,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m venv /opt/venv && \
     /opt/venv/bin/pip install --no-warn-script-location --no-build-isolation \
         open3d \
-        numpy \
+        "numpy<2" \
+        "opencv-python-headless<4.13" \
+        onnxruntime-gpu \
         scipy \
         huggingface_hub
 

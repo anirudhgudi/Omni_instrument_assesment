@@ -3,17 +3,14 @@ ARG BASE_FROM
 FROM ${BASE_FROM} AS ros
 
 # ROS 2 Jazzy installation
-RUN --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt/lists \
-    apt update && apt install -y software-properties-common curl gnupg2 lsb-release \
+RUN apt update && apt install -y --no-install-recommends software-properties-common curl gnupg2 lsb-release \
     && add-apt-repository universe \
     && ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | grep -F "tag_name" | awk -F\" '{print $4}') \
     && curl -L -o /tmp/ros2-apt-source.deb "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(. /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}})_all.deb" \
     && dpkg -i /tmp/ros2-apt-source.deb \
     && apt update \
-    && apt install -y ros-dev-tools \
-    && apt upgrade -y \
-    && apt install -y ros-jazzy-desktop ros-jazzy-stereo-msgs \
+    && apt install -y --no-install-recommends ros-dev-tools \
+    && apt install -y --no-install-recommends ros-jazzy-desktop ros-jazzy-stereo-msgs \
     ros-jazzy-depth-image-proc ros-jazzy-image-pipeline \
     ros-jazzy-pcl-ros ros-jazzy-ament-cmake \
     && rm -rf /var/lib/apt/lists/* /tmp/ros2-apt-source.deb

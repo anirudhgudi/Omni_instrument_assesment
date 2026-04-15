@@ -6,3 +6,8 @@ dataset/VIO_stripped
 dataset/meshes
 .cache
 metrics.txt
+__pycache__/
+*.py[cod]
+.codex
+ros2_ws/cyclonedds.log
+ros2_ws/src/RAFT-Stereo/

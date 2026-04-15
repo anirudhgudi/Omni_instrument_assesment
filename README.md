@@ -27,6 +27,29 @@ This assignment assesses your understanding of geometric vision and metric depth
   <img src="assets/neural_depth_demo.gif" width="1000" style="object-fit:fill;">
 </p>
 
+## Assessment Version
+
+This version keeps the original reconstruction stack and adds a custom depth-estimation path for the assessment. The default launch path uses a `neural_depth` ROS 2 package with a HITNet ONNX stereo model to estimate metric depth from the rectified ZED stereo color images.
+
+Pipeline summary:
+- Subscribes to `/zed/zedxm/left/color/rect/image`, `/zed/zedxm/right/color/rect/image`, and left camera info from the provided ROS 2 bag.
+- Extracts stereo baseline from TF between `zed_left_camera_frame_optical` and `zed_right_camera_frame_optical`.
+- Runs HITNet ONNX inference and converts disparity to metric depth using `depth = fx * baseline / disparity`.
+- Publishes depth on `/omni_depth/depth_registered` and camera intrinsics on `/omni_depth/camera_info`.
+- Converts depth to a point cloud with `depth_image_proc`, fuses it with DB-TSDF, and exports `output/mesh.stl`.
+
+The final tested default is HITNet. The repository also keeps an experimental RAFT-Stereo node/setup path and a classical StereoSGBM node for comparison, but they are not the default launch node.
+
+Latest local HITNet mesh metrics:
+
+```text
+Mean Abs Error : 1.6062 m
+RMSE           : 1.9339 m
+Max Error      : 17.4914 m
+```
+
+Generated outputs such as `output/mesh.stl`, `output/metrics.txt`, downloaded bags, and ground-truth meshes are intentionally ignored by Git because they are large or generated artifacts. Re-run the commands below to regenerate them.
+
 ## Dependencies
 A Linux Ubuntu computer, or other equivalent. 
 
@@ -86,13 +109,19 @@ cd usb_dds_setup && bash install_ipfrag.sh
 You can refer to further documentation [here](https://autowarefoundation.github.io/autoware-documentation/main/installation/additional-settings-for-developers/network-configuration/dds-settings/) or [here](https://docs.ros.org/en/jazzy/How-To-Guides/DDS-tuning.html).
 
 ## Demo
-The ROS 2 bag file already includes a metric depth topic from the camera. You will recreate or implement your own version. But this is a good start and demo.
+Start the Docker environment first. For the tested HITNet path, the CUDA script is recommended because it uses the same ROS 2 Jazzy container and Python virtual environment setup used during development.
+
+```shell
+bash scripts/start_cuda.sh
+```
+
+Inside the container, run the reconstruction launch:
 
 ```shell
 ros2 launch tsdf_saver saver.launch.py
 ```
 
-At the end, the launch file should automatically save a mesh (`.stl`) and stop/close the system after 20 seconds.
+At the end, the launch file automatically saves a mesh (`mesh.stl`) and stops/closes the system after the bag finishes and the save window completes.
 
 > [!NOTE]
 > The generated mesh is saved in the [output](output) folder.
@@ -109,7 +138,13 @@ You can use RVIZ2 to visualize the results.
 ### Comparing the Mesh against the Ground Truth
 We are providing the ground truth mesh, and a basic code to compute the error/metrics. Use that to iterate upon your solution.
 ```shell
-/opt/venv/bin/python /home/$(whoami)/compute_metrics.py #--view
+/opt/venv/bin/python /home/$(whoami)/compute_metrics.py
+```
+
+To visualize the overlay before computing metrics:
+
+```shell
+/opt/venv/bin/python /home/$(whoami)/compute_metrics.py --view
 ```
 <p align="center">
   <img src="assets/mesh_compare.png" width="1000" style="object-fit:fill;">
@@ -151,10 +186,20 @@ The stereo pair exposes two TF frames — `zed_left_camera_frame_optical` and `z
 </p>
 
 ## Launch file
-The [launch file](ros2_ws/src/tsdf_saver/launch/saver.launch.py) must be modified to include your custom ROS 2 package if needed. There is a section to include to your ROS 2 node, ensure the topics are remapped below. 
+The [launch file](ros2_ws/src/tsdf_saver/launch/saver.launch.py) now includes the custom `neural_depth` package and launches `hitnet_node` by default. The launch file injects `/opt/venv/lib/python3.12/site-packages` into `PYTHONPATH` so ROS 2 console scripts can import ONNX Runtime, OpenCV, NumPy, and the other Python dependencies installed in the Docker virtual environment.
+
+The downstream point-cloud node expects:
+- Depth image: `/omni_depth/depth_registered`
+- Depth camera info: `/omni_depth/camera_info`
+- Generated point cloud: `/stereo/points`
+
+`hitnet_node` publishes the first two topics. `depth_image_proc::PointCloudXyzNode` converts them into `/stereo/points`, and DB-TSDF consumes that point cloud.
 
 ### ROS 2 package
-You can start by creating a ROS 2 package for computing the metric depth map. There is enough information in the provided ROS 2 topics to generate this data.
+This repository includes two custom ROS 2 Python packages for depth estimation:
+
+- `ros2_ws/src/neural_depth`: HITNet ONNX default node plus an experimental RAFT-Stereo node/setup path.
+- `ros2_ws/src/stereo_depth`: classical StereoSGBM + WLS baseline node.
 
 You can refer to the [offical documentation](https://docs.ros.org/en/jazzy/Tutorials/Beginner-Client-Libraries/Creating-Your-First-ROS2-Package.html).
 
@@ -183,3 +228,4 @@ This software and dataset are released under the [MIT License](LICENSE).
 This work integrates several powerful research papers, libraries, and open-source tools:
 
 - [**DB-TSDF**](https://robotics-upo.github.io/DB-TSDF/)
+- [**HITNet: Hierarchical Iterative Tile Refinement Network for Real-time Stereo Matching**](https://arxiv.org/abs/2007.12140)

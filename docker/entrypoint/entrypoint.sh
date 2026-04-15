@@ -85,5 +85,11 @@ download_missing_data
 
 cd /home/$(whoami)/output
 
+# ── CycloneDDS tuning ────────────────────────────────────────────────
+# Activates the XML config that uses the large kernel socket buffers
+# set by usb_dds_setup/install_ipfrag.sh (rmem_max = 2 GiB).
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+export CYCLONEDDS_URI=file:///home/$(whoami)/.ros/cyclone_dds.xml
+
 echo "[entrypoint] Executing command: $*"
 exec "$@"
